@@ -120,3 +120,10 @@ flowchart TD
 - `PhysicalLegacyLedger`：原前世实体继续持有唯一ID，不被灵藏图谱凭空复制。
 
 详见[25](25-RELIC-VAULT.md)～[29](29-RELIC-PLAYTEST.md)。不增加第五主界面或新的独立常驻货币；设计经济不能让遗物抽取吞掉首章保证灵材来源。
+
+## V0.8 核心游戏性与共享挑战处理
+- `CultivationPath`：本世一项主修，候选5种但首版只做玄/丹；用**特色行动的机会成本**取代5套技能树/独立产线。由[31](31-CULTIVATION-PATHS.md)约束。
+- `PersonalTrial`：`lifeId + trialTemplateId + stage`，每世最多一个常规关键命关，失败通常为年份/资源损失；可重复**机制模板**，不重复世界史。
+- `HistoricalEpoch`：`worldlineId + epochEventId + worldYear`，重大历史杀劫一次性结算，玩家失败也使历史进入余波阶段。
+- `SolutionEngine`：挑战共享境界承载/材料与年份/特殊旗标三个输入域，最多显示3个适用生路；剑、阵、命的特技只改变可达方案、成本与风险，不增加三种单独货币。
+- `RelicLoadout`：仍2→6槽与领域叠加上限；一世仅配置主修而非无代价五主修全开。挑战与构筑细节见[32](32-TRIAL-DIRECTOR-AND-BALANCE.md)，产品核心见[30](30-CORE-FUN-THESIS.md)。
