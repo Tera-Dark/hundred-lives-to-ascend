@@ -1,4 +1,4 @@
-# 07 · 技术与 TapTap 适配预案 V0.3
+# 07 · 技术与 TapTap 适配预案 V0.6
 
 > 技术暂定 Cocos Creator 3.8.8 + TypeScript。**本阶段只修改文档，未经另行批准不创建游戏代码/工程。** 官方平台规则和接口在实际构建/提审时应复核。
 
@@ -69,3 +69,10 @@ Tap 小游戏并非普通浏览器 DOM/BOM 运行环境。游戏必须经 Cocos 
 - [Tap 小游戏 IAA](https://developer.taptap.cn/minigameapidoc/quick-start/monetization/IAA-game/)
 
 技术实现细节以 [10 时间规则](10-TIME-EPOCH.md)和 [11 遗藏规则](11-LEGACY-ITEMS.md)为系统权威来源；此文仅列未来工程要解决的状态与测试。
+
+## V0.6 时间、事件与重置的事务验收
+- 事件调度必须支持 **LifeEvent(lifeId,elapsedYear)** 和 **WorldEpochEvent(worldlineId,eventId,absoluteWorldYear)** 两套不同幂等键；之前把资源事件18/34绑定世界历史年会使第2世缺材料。
+- **世界160原型内容边界**属于 `PENDING_CONTENT`，保持本世存档与物件所有权，不发RP、不死亡、不卡到空循环；见 [23](23-CONTINUOUS-WORLDLINE-TEST.md)。
+- `advanceGameYears`（概念接口）不论从自动计时、主动闭关或智能快进入口，都必须调用同一递增逻辑：每年只产一次资源且只老一岁，边界处暂停。可在性能上批量计算稳定区间，但不得穿透事件或寿尽。
+- RP发奖要有**账号级首次标记、有效决策计数和幂等生涯结算ID**；纯时钟快进不能假冒玩家完成选择，后期DP/EP另有独立账簿。
+- 安全覆盖测试：60事件仅一次、第二世相对事件仍出现、同一玉饰仅一个实体、世界160暂停后恢复、UI加速跨事件触发准确、重复读档不重复发币。
