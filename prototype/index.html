@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#131917" />
+  <meta name="description" content="《百世劫录》玄修/丹修双流派可玩验证切片" />
+  <title>百世劫录 · 交互原型</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+  <div class="workspace">
+    <aside class="intro">
+      <div class="eyebrow">HUNDRED LIVES TO ASCEND / MVP-0</div>
+      <div class="seal">百<br>世</div>
+      <h1>百世劫录</h1>
+      <p class="subtitle">一世争长生 · 万世改天命</p>
+      <p class="intro-copy">有限寿元，不可倒流的天地历史。选一条道，用有限的年岁寻找生路。</p>
+      <div class="intro-foot">玄修 × 丹修 · 双流派体验验证<br>纯浏览器原型 · 不是正式 TapTap 版本</div>
+    </aside>
+    <main class="phone" aria-label="百世劫录原型">
+      <header class="masthead">
+        <div class="masthead-top"><span>浮岚界 · 照世碑</span><span class="build-tag">PROTOTYPE 0.1</span></div>
+        <div class="hero-mark"><div class="hero-circle">命</div><div><h2>百世劫录</h2><p>岁月为炉，因果作薪</p></div></div>
+        <div class="thin-divider"></div>
+        <div id="stats" class="stats" aria-live="polite"></div>
+      </header>
+      <div id="notice" class="notice" role="status"></div>
+      <section class="timeline"><div class="timeline-head"><span>本世修行</span><span id="time-meter"></span></div><div class="progress-track"><div id="progress-bar" class="progress-fill"></div></div></section>
+      <div id="content" class="content" aria-live="polite"></div>
+      <nav class="navigation" aria-label="主要功能">
+        <button data-tab="修行" class="nav-button" type="button"><span class="nav-ico">◎</span>修行</button>
+        <button data-tab="机缘" class="nav-button" type="button"><span class="nav-ico">✧</span>机缘</button>
+        <button data-tab="应劫" class="nav-button" type="button"><span class="nav-ico">☯</span>应劫</button>
+        <button data-tab="轮回" class="nav-button" type="button"><span class="nav-ico">↻</span>轮回</button>
+      </nav>
+    </main>
+    <aside class="side-notes">
+      <div class="side-title">人生简录</div><div id="sidebar-history"></div>
+      <div class="legend"><span class="status-dot"></span> 游戏年可暂停与推进，不等于现实时间</div>
+    </aside>
+  </div>
+  <div id="modal-root"></div>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>
