@@ -111,3 +111,12 @@ flowchart TD
 - **TimeScheduler**：所有时钟及快进使用同一结算管道，暂停在新抉择/寿尽/历史边界，避免双产和漏关。
 - **LegacyLedger**：物品唯一ID跨人物人生转移，但跨世界线/篇章不能复制；因果可影响当世事件选项。
 - MVP不因此新增独立主导航/材料币/宗门经营界面；四入口和3基础资源边界不变。见 [22](22-PRESTIGE-SEARCH.md)、[23](23-CONTINUOUS-WORLDLINE-TEST.md)、[24](24-LONG-LIFE-PACING.md)。
+
+## V0.7 增量模块职责（保持四主入口）
+- `RelicLibrary`（账号）：收录、等级、七档通用/专属碎片、2–6装备位、叠加上限。
+- `RelicExplorationSource`（世界/本世）：探索合法性、耗费年数/材料、事件可重复次数、隐藏线索与奖励ID。
+- `Codex/Journal`：从世界线历史、本世札记和账号记录生成**只读的**图鉴、日志、成就视图。
+- `AchievementLedger`：账号唯一首达奖励，防止图鉴/日志/成就重复发奖。
+- `PhysicalLegacyLedger`：原前世实体继续持有唯一ID，不被灵藏图谱凭空复制。
+
+详见[25](25-RELIC-VAULT.md)～[29](29-RELIC-PLAYTEST.md)。不增加第五主界面或新的独立常驻货币；设计经济不能让遗物抽取吞掉首章保证灵材来源。
