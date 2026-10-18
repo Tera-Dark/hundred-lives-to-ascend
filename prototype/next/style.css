@@ -24,3 +24,36 @@
 .rebirth-buttons{margin-top:14px}.rebirth-buttons .action-btn{width:100%}.log-filter{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}.filter-chip{font-size:10px;padding:5px 8px;border-radius:6px;background:#20353a;color:#b0c3bb;border:1px solid #436062}.filter-chip.selected{background:#2e5949;border-color:#a3c4a7;color:#fff1d3}.log-list{max-height:420px;overflow:auto}.log-entry{padding:9px 0;border-bottom:1px solid #2e4849}.log-entry small{display:block;color:#c4b28c;font-size:10px;margin-bottom:4px}.log-entry span{font-size:11px;color:#bbcdc0;line-height:1.55}.action-current{display:flex;gap:10px;align-items:center}.action-current .ico{color:#edcc8c}.action-current>div{display:flex;flex-direction:column;gap:4px}.action-current b{font-size:12px}.action-current span{font-size:10px;color:#b6cbbb}
 .foot-status{display:flex;align-items:flex-start;gap:6px;color:#9eafa8;font-size:10px;line-height:1.6;padding:8px 1px 12px}.foot-status .ico{height:14px;width:14px;flex:none}.bottom-fixed{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);z-index:15;background:#10242a;border-top:1px solid #3e5552;padding-bottom:env(safe-area-inset-bottom,0)}.next-buttons{display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:8px;padding:8px 12px;background:#14282e}.next-btn{padding:10px 3px;border-radius:8px;background:#315c4b;border:1px solid #6a9a80;font-weight:700;color:#f3eee1;min-height:40px}.next-btn.emph{display:flex;align-items:center;justify-content:center;gap:7px;background:#634f38;border-color:#a88752}.next-btn.emph .ico{height:16px;width:16px}.bottom-tabs{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #3a514e}.bottom-tab{min-height:58px;background:transparent;border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#9fafaa;font-size:11px}.bottom-tab .ico{width:20px;height:20px}.bottom-tab.active{background:#1f3a39;color:#e1e9d3}.bottom-tab.active .ico{color:#e4c980}.new-ui .overlay{z-index:40}.new-ui .modal{max-height:min(80vh,660px);overflow-y:auto;border-radius:14px}.new-ui .modal-options button{padding:12px}.new-ui .modal h2{font-size:21px}.new-ui .modal>p:not(.eyebrow){font-size:12px;line-height:1.6}
 @media(max-width:370px){.new-top{padding-left:12px;padding-right:12px}.new-screen{padding-left:9px;padding-right:9px}.resources{padding-left:4px;padding-right:4px}.brand-text h1{font-size:21px}.new-screen .panel{padding:12px}.career-switch{grid-template-columns:1fr 1fr}.career-choice{gap:4px;padding:7px 5px}.career-choice .ico{display:none}.career-choice>span:last-child{font-size:8px}.allocation-values{font-size:9px}.calamity-head strong{font-size:24px}}
+
+/* V1.4 墨青金环 / layered art. Decorative only; all game controls are HTML/CSS. */
+.new-ui .new-top{
+ background-image:
+  linear-gradient(90deg,rgba(12,24,30,.97) 0%,rgba(12,24,30,.91) 54%,rgba(12,24,30,.68) 100%),
+  url("./assets/backgrounds/immortal-realm.webp");
+ background-position:center,center 29%;
+ background-size:cover;
+ border-bottom:1px solid rgba(207,168,97,.4);
+}
+.new-ui .brand-sigil{border-color:rgba(210,175,110,.64);box-shadow:0 0 18px rgba(203,172,111,.12),inset 0 0 18px rgba(203,172,111,.11)}
+.new-ui .panel.break-panel{position:relative;overflow:hidden;isolation:isolate}
+.new-ui .panel.break-panel::before{
+ content:"";position:absolute;pointer-events:none;
+ width:44%;height:210px;right:-20px;top:8px;
+ background:url("./assets/characters/meditating-cultivator.webp") center/contain no-repeat;
+ opacity:.27;z-index:0;filter:saturate(.8);
+}
+.new-ui .panel.break-panel>*{position:relative;z-index:1}
+.new-ui .panel.calamity-panel{
+ background-image:linear-gradient(100deg,rgba(21,32,39,.99) 2%,rgba(21,32,39,.94) 58%,rgba(21,32,39,.76)),url("./assets/scenes/calamity.webp");
+ background-size:cover,cover;background-position:center,center 43%;
+ border-color:rgba(172,119,104,.56);
+}
+.new-ui .career-main{
+ background-image:linear-gradient(95deg,rgba(24,41,43,.96),rgba(24,41,43,.91) 76%,rgba(24,41,43,.77)),url("./assets/scenes/fated-journey.webp");
+ background-position:center,75% 55%;background-size:cover;
+ border:1px solid rgba(189,159,104,.23);
+}
+@media(max-width:360px){
+ .new-ui .panel.break-panel::before{width:38%;height:170px;right:-25px;opacity:.18}
+ .new-ui .panel.calamity-panel{background-image:linear-gradient(90deg,rgba(21,32,39,.97),rgba(21,32,39,.85)),url("./assets/scenes/calamity.webp")}
+}

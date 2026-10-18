@@ -1,0 +1,80 @@
+{
+  "version": "1.4",
+  "theme": "墨青金环",
+  "purpose": "Game UI art, images are independent of text and controls",
+  "provenance": "Original image generation within this conversation, optimized to WebP for web delivery",
+  "assets": [
+    {
+      "path": "backgrounds/immortal-realm.webp",
+      "name": "浮岚仙境",
+      "type": "background",
+      "bytes": 240572,
+      "size": [
+        840,
+        1492
+      ],
+      "alpha": false,
+      "checksum": "81139fc10f4638d9d9b76cfcbc94450fed92234c3c6a0aced11cc7d75537909f"
+    },
+    {
+      "path": "characters/jade-companion.webp",
+      "name": "青玉同道",
+      "type": "character",
+      "bytes": 264944,
+      "size": [
+        840,
+        1049
+      ],
+      "alpha": true,
+      "checksum": "a1310076d4c5fb6f56fe1cf4a5569d55cfaef4ae05dc66ebb0a224dfdd81eb0d"
+    },
+    {
+      "path": "characters/meditating-cultivator.webp",
+      "name": "静修者",
+      "type": "character",
+      "bytes": 394996,
+      "size": [
+        840,
+        1049
+      ],
+      "alpha": true,
+      "checksum": "02e1cabadbfa58c7b790e9a88fff261fa27dca18f9df72ba14393c7ee24c9b83"
+    },
+    {
+      "path": "characters/wandering-cultivator.webp",
+      "name": "行走修士",
+      "type": "character",
+      "bytes": 298782,
+      "size": [
+        840,
+        1049
+      ],
+      "alpha": true,
+      "checksum": "108ddbe7968d63d91ef10748f911c54197cba4069e1348589673741e0d4daf0f"
+    },
+    {
+      "path": "scenes/calamity.webp",
+      "name": "应劫魔潮",
+      "type": "scene",
+      "bytes": 188946,
+      "size": [
+        840,
+        1120
+      ],
+      "alpha": false,
+      "checksum": "2f760cfc6d9bda6cc0c3add2f2687675128ffa461ed45d61154cd371288d8348"
+    },
+    {
+      "path": "scenes/fated-journey.webp",
+      "name": "游历机缘",
+      "type": "scene",
+      "bytes": 238582,
+      "size": [
+        840,
+        1120
+      ],
+      "alpha": false,
+      "checksum": "db4998e910c8a7a1e60e0f57d1cb45dc6a56adc3d80a9b2c1b30d174d6d8788c"
+    }
+  ]
+}
