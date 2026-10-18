@@ -45,6 +45,7 @@
 | [13-PRESTIGE-LAYERS](docs/13-PRESTIGE-LAYERS.md) | **RP/DP/EP 三阶局外成长唯一权威** |
 | [14-SYSTEM-BLUEPRINT](docs/14-SYSTEM-BLUEPRINT.md) | **各模块输入输出、资源耦合与重置边界** |
 | [15-PLAYER-JOURNEY-AND-TESTS](docs/15-PLAYER-JOURNEY-AND-TESTS.md) | 前五世体验与长期玩法/验证计划 |
+| [16-PRESTIGE-UPGRADE-CATALOG](docs/16-PRESTIGE-UPGRADE-CATALOG.md) | **30个候选局外升级节点、流派组合与删减准则** |
 
 ## 版本与开发状态
 - V0.1：固定百年末日的早期备选，已淘汰，历史快照 `archive/design-v0.1-before-dual-timeline`。
