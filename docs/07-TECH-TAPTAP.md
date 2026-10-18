@@ -76,3 +76,8 @@ Tap 小游戏并非普通浏览器 DOM/BOM 运行环境。游戏必须经 Cocos 
 - `advanceGameYears`（概念接口）不论从自动计时、主动闭关或智能快进入口，都必须调用同一递增逻辑：每年只产一次资源且只老一岁，边界处暂停。可在性能上批量计算稳定区间，但不得穿透事件或寿尽。
 - RP发奖要有**账号级首次标记、有效决策计数和幂等生涯结算ID**；纯时钟快进不能假冒玩家完成选择，后期DP/EP另有独立账簿。
 - 安全覆盖测试：60事件仅一次、第二世相对事件仍出现、同一玉饰仅一个实体、世界160暂停后恢复、UI加速跨事件触发准确、重复读档不重复发币。
+
+## V0.7 新增永久遗物/事件系统存档字段
+账号层：`relicCatalogUnlocked`, `relicLevelById`, `specificShardsById`, `genericShardsByRarity`, `relicSlotCount(2..6)`, `equippedRelicIds[]`, `achievementClaimLedger`, `codexState`；世界线层仍然保存独立的 `physicalLegacyItemLedger` 和 `worldlineId`。**灵藏遗物不可把同一个世界实物实例复制出来**。未来祭炼入碑必须在同一个存档事务内销毁真实 `uniqueItemId`、才可收录账号图谱。
+
+每次合法探索奖励应写入固定 `rewardTransactionId`；首次图鉴收录/重复专属碎片/Lv10溢出/兑换消耗/成就解锁/日志摘要以事务提交，前后台重试、双击、回溯后不得双领。换装最大6项且同一遗物ID不得重复；不可升级遗物不生成无用途碎片。存档长期日志需摘要压缩并可阅读历史关键事件；实现前验收列表见[27](27-CODEX-JOURNAL-ACHIEVEMENTS.md)。
