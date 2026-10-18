@@ -3,7 +3,7 @@
 > **一世争长生，万世改天命。**  
 > 寿元轮回 × 天地纪元 × 前世遗藏 × 多篇章挑战 × 三阶局外增量。
 
-**当前状态：MVP-0 可点击的浏览器交互验证切片已提交（玄修/丹修、两世轮回与遗物寻回），不是 Cocos 工程或正式 TapTap 小游戏，尚无真人试玩及最终平衡验证。**
+**当前状态：V1.1「法财侣地」经营增量→逐步自动化→修仙主体的策划方案已提交；现有MVP-0网页原型仍是旧经济版本，尚未按新方案修改、部署或重新平衡，也不是Cocos正式游戏。**
 
 
 ## 已可试玩：MVP-0 浏览器原型
@@ -77,7 +77,12 @@
 | [33-XUAN-DAN-ACCEPTANCE](docs/33-XUAN-DAN-ACCEPTANCE.md) | **双流派同条件经济、心魔试炼、遗物/RP与逆风对照结果** |
 | [34-ALPHA-TWO-PATH-SLICE](docs/34-ALPHA-TWO-PATH-SLICE.md) | V0.9双流派首段交互卡、操作预算和旧测试方案（历史） |
 | [35-ISSUE-FIX-AND-BASELINE](docs/35-ISSUE-FIX-AND-BASELINE.md) | **V1.0最新双流派缺陷整改与统一数值口径（覆盖旧年份）** |
-| [36-OVERALL-EXPERIENCE-REVIEW](docs/36-OVERALL-EXPERIENCE-REVIEW.md) | **游戏体验综合评价、最薄弱环节、P0/P1/P2开发边界** |
+| [36-OVERALL-EXPERIENCE-REVIEW](docs/36-OVERALL-EXPERIENCE-REVIEW.md) | V1.0阶段体验评审（更新前） |
+| [37-MVP0-IMPLEMENTATION](docs/37-MVP0-IMPLEMENTATION.md) | **实际可玩网页原型实现范围及验证记录** |
+| [38-FA-CAI-LV-DI-CORE-VISION](docs/38-FA-CAI-LV-DI-CORE-VISION.md) | **V1.1法财侣地四要素及经营→证道体验支柱** |
+| [39-LIVELIHOOD-AND-SCHEDULE](docs/39-LIVELIHOOD-AND-SCHEDULE.md) | **职业晋升、四档时间计划、生活投资、法门与有限自动化** |
+| [40-COMPANIONS-AND-PLACES](docs/40-COMPANIONS-AND-PLACES.md) | **同道关系、洞府、浮潮集/青药谷与跨世历史因果** |
+| [41-TWO-PHASE-EXPERIENCE-PRD](docs/41-TWO-PHASE-EXPERIENCE-PRD.md) | **第一/第二世内容排期、MVP-E1规模及经济验证门槛** |
 
 ## 版本与开发状态
 - V0.1：固定百年末日的早期备选，已淘汰，历史快照 `archive/design-v0.1-before-dual-timeline`。
@@ -132,3 +137,12 @@
 - 综合评价：**核心设定潜力存在，但第一场世界灾劫以后复玩内容、寿元超长人生的积极目标、实际玩家操作验证不足**。尚不适合冻结完整游戏PRD；按[36](docs/36-OVERALL-EXPERIENCE-REVIEW.md)优先制作前两世体验与无美术交互验证（开发仍须另行授权）。
 
 **世界60→160的阶段性补洞（候选）**：已规划世界年92预警、95–99应对的地方余波「余潮断脉」，用境界稳脉/耗材调脉/安全撤离三条有成本路线回应灾后世界；它是现有余波模板的**条件分支**，不另加新的普通事件模板或重演全球灵潮。**仍未实测，也不能替代尚未实现的世界160危机**，详见 [35](docs/35-ISSUE-FIX-AND-BASELINE.md)。
+
+## V1.1 最新策划决定：从营生经营逐步走向证道（**尚未进入原型**）
+- **前期经营增量为主要体验**：营生职业（采药/商行两条纵向晋升链）+ 三用途年度时间计划（营生/修行/研习）+ 灵食/洞府投资+一个重点道友关系+地区选择，形成挣钱→改善效率→进阶的持续反馈。
+- **中期逐步自动化**：账号历史最高职业与研修纪录提供有限的下世成长加速，RP逐步解锁已熟悉事务的自动计划；营生依旧付时间/维护成本，不能凭空复利。
+- **后期修仙成为主要手动决策**：境界、功法、遗物、法则、个人命关、纪元世界后果；正常经营委托伙伴/产业按明确授权运行。
+- **四主入口不变，不新增日常货币/精力条**；一世的NPC、灵石、洞府和契约留在持续的世界线上，账号只直接保留合理的知识纪录、RP与灵藏。
+- **重要未验证：** 旧每年固定资源增长与玄丹在世界60的经济表**不能直接与新的日程分配系统叠加**，须先重算两条保底生存路径与实际操作时长。现有 `prototype/` 与 GitHub Pages 试玩内容均**未按V1.1改变**。
+
+完整规则：[38 总览](docs/38-FA-CAI-LV-DI-CORE-VISION.md) · [39 职业与年度经济](docs/39-LIVELIHOOD-AND-SCHEDULE.md) · [40 关系与地区世界](docs/40-COMPANIONS-AND-PLACES.md) · [41 两世验收与制作范围](docs/41-TWO-PHASE-EXPERIENCE-PRD.md)。
