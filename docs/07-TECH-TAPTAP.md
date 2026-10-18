@@ -81,3 +81,6 @@ Tap 小游戏并非普通浏览器 DOM/BOM 运行环境。游戏必须经 Cocos 
 账号层：`relicCatalogUnlocked`, `relicLevelById`, `specificShardsById`, `genericShardsByRarity`, `relicSlotCount(2..6)`, `equippedRelicIds[]`, `achievementClaimLedger`, `codexState`；世界线层仍然保存独立的 `physicalLegacyItemLedger` 和 `worldlineId`。**灵藏遗物不可把同一个世界实物实例复制出来**。未来祭炼入碑必须在同一个存档事务内销毁真实 `uniqueItemId`、才可收录账号图谱。
 
 每次合法探索奖励应写入固定 `rewardTransactionId`；首次图鉴收录/重复专属碎片/Lv10溢出/兑换消耗/成就解锁/日志摘要以事务提交，前后台重试、双击、回溯后不得双领。换装最大6项且同一遗物ID不得重复；不可升级遗物不生成无用途碎片。存档长期日志需摘要压缩并可阅读历史关键事件；实现前验收列表见[27](27-CODEX-JOURNAL-ACHIEVEMENTS.md)。
+
+## V0.7 永久遗物与三视图日志的数据边界
+账号字段：`relicUnlocked` / `relicLevelById` / `specificShardsById` / `genericShardsByTier` / `relicSlots(2..6)` / `equippedRelicIds` / `achievementClaimLedger`；世界线原有 `physicalLegacyItemLedger` 独立保管实体唯一ID。每次合法探索唯一 `rewardTransactionId`，收录、碎片、升级、成就、日志摘要**同一事务一次性提交**；若未来实物祭炼入碑，必须先消费原物的唯一ID。换装同ID不可重复，已满级碎片溢出只能转同档通用。世录的关键事件可读、普通年度收益聚合压缩，具体见[27](27-CODEX-JOURNAL-ACHIEVEMENTS.md)。
