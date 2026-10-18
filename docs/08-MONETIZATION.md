@@ -28,3 +28,6 @@
 - [Tap 小游戏 IAA](https://developer.taptap.cn/minigameapidoc/quick-start/monetization/IAA-game/)
 - [Dirichlet 说明](https://developer.taptap.cn/minigameapidoc/tap-operation/operation/monetization-operation/IAA/dirichlet-intro/)
 - [激励视频参考](https://developer.taptap.cn/minigameapidoc/dev/tutorial/open-capabilities/ad/rewarded-video-ad/)
+
+## V0.7 遗物收集和IAA公平
+**不销售遗物盲盒、彩遗物、强化碎片倍数、直接开六槽、探索必需门票、同档兑换手续费豁免**。七档稀有度与隐藏图鉴均可通过普通游玩和有条件的探索/历练获得；高档剧情类不靠观看广告获得。图鉴/日志/成就自动记录，不能为了增加广告曝光故意让玩家反复打开升级界面。可选便利广告不得改变天劫生存的必备条件或造成重复碎片发放。
