@@ -1,5 +1,7 @@
 # 43 · V1.2「法财侣地×跨世剧情」实际可玩原型与验收
 
+> **历史快照：** 本文记录V1.2验收。当前模块结构、43项测试、19功能指引与存档v3见[当前导航](CURRENT-DESIGN.md)；不把下文的阶段状态当作现行实现。
+
 > 本文是**实际实现范围**，优先于 [38](38-FA-CAI-LV-DI-CORE-VISION.md)–[41](41-TWO-PHASE-EXPERIENCE-PRD.md)中的未来功能计划。浏览器原型源码：[`prototype/next/`](../prototype/next/)。历史MVP-0仍在[`prototype/`](../prototype/)。**没有实现Cocos Creator/正式TapTap/手机端原生发布**。
 
 ## 一、构建与执行

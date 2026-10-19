@@ -1,0 +1,753 @@
+/* 触控与轻量视觉层：控件至少48px；内容按真实高度展开。 */
+:root {
+  --touch: 48px;
+}
+button,
+summary {
+  min-height: var(--touch);
+  min-width: var(--touch);
+}
+button {
+  position: relative;
+}
+body::before {
+  background:
+    linear-gradient(#0d2024c9, #0d2024e8),
+    url("../assets/backgrounds/quiet-mountains.webp") center/cover;
+}
+body::after,
+.desktop-inscription .red-seal {
+  display: none;
+}
+.shell {
+  padding-bottom: calc(156px + env(safe-area-inset-bottom, 0px));
+}
+.masthead {
+  background: #152d31;
+  padding-top: 16px;
+}
+.identity {
+  gap: 8px;
+}
+.identity h1 {
+  font-size: 24px;
+  letter-spacing: 0.05em;
+}
+.identity .eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+.brand-heading {
+  gap: 3px;
+}
+.guide-entry {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  background: none;
+  border-radius: 8px;
+  font-size: 22px;
+}
+.avatar {
+  display: none;
+}
+.incarnation {
+  padding-left: 8px;
+}
+.incarnation strong {
+  font-size: 16px;
+}
+.incarnation strong b {
+  font-size: 27px;
+}
+.incarnation > span,
+.life-strip {
+  font-size: 12px;
+}
+.resources {
+  padding: 12px 0;
+  background: #10282d;
+}
+.res > span,
+.res small {
+  font-size: 12px;
+}
+.res > b {
+  font-size: 22px;
+}
+.world-scene {
+  height: 138px;
+  background:
+    linear-gradient(#1530331a, #112a2b55),
+    url("../assets/backgrounds/quiet-mountains.webp") center 54% / cover;
+}
+.world-scene::after {
+  background: linear-gradient(transparent 65%, #102328);
+}
+.world-caption {
+  font-size: 12px;
+  color: #193d3c;
+  text-shadow: none;
+  top: 12px;
+}
+.world-caption .ico,
+.scene-poem,
+.place-marker > i {
+  display: none;
+}
+.place-marker {
+  position: absolute;
+  bottom: 31px;
+  top: auto;
+  min-width: 88px;
+  min-height: 48px;
+  background: #163a3bf0;
+  border: 1px solid #a1b7a3;
+  border-radius: 8px;
+}
+.place-marker > span {
+  writing-mode: horizontal-tb;
+  background: none;
+  clip-path: none;
+  font-size: 17px;
+  padding: 10px 12px;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+}
+.marker-town {
+  left: 14px;
+}
+.marker-valley {
+  right: 14px;
+  left: auto;
+}
+.world-location {
+  left: 14px;
+  right: 14px;
+  bottom: 8px;
+  font-size: 12px;
+}
+.screen {
+  padding: 0 14px 24px;
+  gap: 14px;
+}
+.ornate,
+.panel {
+  border: 1px solid #68857a70;
+  box-shadow: none;
+  border-radius: 12px;
+}
+.page-banner {
+  background: #1b3538;
+  padding: 18px;
+}
+.page-banner > span {
+  font-size: 12px;
+}
+.ornate::after {
+  display: none;
+}
+.goal-compact {
+  padding: 12px;
+  border-radius: 10px;
+}
+.goal-compact > span {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+.goal-compact small {
+  font-size: 12px;
+  display: block;
+}
+.goal-compact b {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.cultivation-card {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: 0;
+  padding: 16px;
+  background: #1b3538;
+}
+.cultivation-card::before,
+.cultivation-orbit,
+.realm-seal {
+  display: none;
+}
+.cultivation-heading {
+  padding: 0;
+  min-height: 105px;
+  max-width: 65%;
+}
+.cultivation-heading .eyebrow {
+  font-size: 10px;
+}
+.cultivation-heading h2 {
+  font-size: 34px;
+  margin: 4px 0;
+  text-shadow: none;
+}
+.cultivation-heading p {
+  font-size: 14px;
+}
+.meditating-art {
+  top: 8px;
+  left: auto;
+  right: 8px;
+  width: 116px;
+  height: 116px;
+  transform: none;
+  opacity: 0.85;
+  filter: none;
+}
+.cultivation-links {
+  position: static;
+  flex-direction: row;
+  width: 100%;
+  padding: 0;
+  gap: 8px;
+  margin: 8px 0 0;
+}
+.cultivation-links button {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  min-height: 48px;
+  justify-content: center;
+  border: 1px solid #648478;
+  border-radius: 9px;
+  background: #142e30;
+  font-size: 16px;
+  gap: 6px;
+  padding: 8px 4px;
+}
+.cultivation-links .ico {
+  border: 0;
+  padding: 0;
+  width: 19px;
+  height: 19px;
+  border-radius: 0;
+  background: none;
+}
+.cultivation-bottom,
+.cultivation-card:has(.xuan-option) .cultivation-bottom {
+  position: static;
+  margin-top: 16px;
+  padding: 0;
+  background: none;
+  border: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+.cultivation-progress > div:first-child {
+  font-size: 13px;
+}
+.cultivation-progress small {
+  font-size: 12px;
+  line-height: 1.7;
+}
+.gold-button,
+.action-btn.primary,
+.main-btn {
+  min-height: 52px;
+  font-size: 21px;
+  border-radius: 9px;
+  clip-path: none;
+  box-shadow: none;
+}
+.xuan-option {
+  position: static;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin-top: 10px;
+  background: none;
+  gap: 4px 8px;
+}
+.xuan-option > span {
+  font-size: 12px;
+}
+.text-button {
+  font-size: 14px;
+  padding: 8px;
+}
+.action-reason {
+  position: static;
+  font-size: 13px;
+  margin-top: 8px;
+}
+.story-cards {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.story-card {
+  height: auto;
+  min-height: 104px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 5px 12px;
+  background: #193338;
+}
+.story-card::before,
+.story-card::after,
+.companion-silhouette {
+  display: none;
+}
+.story-card h2 {
+  font-size: 25px;
+  grid-column: 1;
+}
+.story-card > p {
+  font-size: 13px;
+  grid-column: 1;
+}
+.story-card-bottom {
+  position: static;
+  font-size: 14px;
+  grid-column: 2;
+  grid-row: 1 / 3;
+  max-width: 120px;
+}
+.calamity-count {
+  position: static;
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  text-align: right;
+}
+.calamity-count small {
+  font-size: 12px;
+}
+.calamity-count b {
+  font-size: 23px;
+  line-height: 1.2;
+}
+.calamity-art .story-card-bottom {
+  grid-row: 2;
+  font-size: 12px;
+}
+.companion-names {
+  display: none;
+}
+.chronicle {
+  background: #193338;
+}
+.chronicle-title {
+  flex-wrap: wrap;
+}
+.chronicle-title > span {
+  font-size: 13px;
+}
+.guide-next {
+  align-items: center;
+  padding: 4px 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.guide-next .guide-text {
+  flex-shrink: 0;
+}
+.guide-text {
+  padding: 10px 8px;
+  font-size: 13px;
+}
+.guide-card h2 {
+  font-size: 27px;
+}
+.guide-card p {
+  font-size: 14px;
+}
+.guide-tip {
+  font-size: 13px;
+}
+.panel {
+  background: #183135;
+  padding: 16px;
+}
+.panel-head {
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  min-height: 48px;
+  margin-bottom: 12px;
+}
+.panel-head h2 {
+  font-size: 23px;
+}
+.panel-meta {
+  font-size: 12px;
+  text-align: left;
+}
+.feature-block .panel-head {
+  padding-right: 48px;
+}
+.feature-help {
+  width: 48px;
+  height: 48px;
+  top: 16px;
+  right: 13px;
+  border: 0;
+  background: none;
+  font-size: 21px;
+}
+.mini-action,
+.small-btn,
+.action-btn.secondary,
+.study-pill,
+.filter-chip {
+  min-height: 48px;
+  min-width: 48px;
+  font-size: 14px;
+  padding: 10px 13px;
+  border-radius: 8px;
+}
+.plan-options {
+  gap: 8px;
+}
+.plan-choice {
+  min-height: 70px;
+  border-radius: 8px;
+}
+.plan-choice b {
+  font-size: 14px;
+}
+.study-pills,
+.log-filter,
+.btn-row {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.investment {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 9px;
+  padding: 14px 0;
+}
+.investment > div {
+  min-width: 0;
+}
+.investment b {
+  font-size: 14px;
+}
+.investment small,
+.short-hint,
+.available-action > small,
+.locked-feature > small {
+  font-size: 12px;
+  line-height: 1.8;
+}
+.career-choice {
+  padding: 12px;
+  gap: 8px;
+  min-height: 64px;
+}
+.career-choice small,
+.career-choice > span:last-child {
+  font-size: 12px;
+}
+.management > summary {
+  min-height: 60px;
+  font-size: 19px;
+}
+.management > summary > span {
+  font-size: 12px;
+}
+.next-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.65fr;
+  gap: 8px;
+  padding: 10px 12px;
+}
+.time-label {
+  display: none;
+}
+.next-btn {
+  min-height: 48px;
+  font-size: 15px;
+  padding: 10px 6px;
+  border-radius: 8px;
+}
+.next-btn > span {
+  font-size: 12px;
+}
+.bottom-tabs {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.bottom-tab {
+  min-height: 70px;
+  padding: 8px 2px;
+  gap: 5px;
+}
+.bottom-tab > span {
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.bottom-tab .ico {
+  width: 24px;
+  height: 24px;
+}
+.bottom-tab > b {
+  font:
+    14px "Microsoft YaHei",
+    sans-serif;
+}
+.bottom-tab.active {
+  background: #28443f;
+}
+.bottom-tab.active > span {
+  border: 0;
+  box-shadow: none;
+  background: none;
+}
+.bottom-fixed {
+  border-color: #668378;
+}
+.shell:has(.settings-page) {
+  padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+}
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.setting-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 15px 0;
+  border-bottom: 1px solid #8aab9b26;
+}
+.setting-row > div {
+  min-width: 0;
+}
+.setting-row b {
+  font-size: 15px;
+  font-weight: 500;
+}
+.setting-row small {
+  display: block;
+  color: #afc4ba;
+  font-size: 12px;
+  line-height: 1.8;
+  margin-top: 5px;
+}
+.setting-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 8px;
+  background: #10262b;
+  border: 1px solid #648476;
+  border-radius: 24px;
+  min-width: 76px;
+  justify-content: center;
+}
+.setting-switch > span {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #718a83;
+}
+.setting-switch[aria-checked="true"] {
+  background: #31584b;
+  border-color: #acd4b8;
+  color: #e3f5df;
+}
+.setting-switch[aria-checked="true"] > span {
+  background: #c3e8c8;
+}
+.setting-volume {
+  padding: 15px 0;
+  border-bottom: 1px solid #8aab9b26;
+}
+.setting-volume > b {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 400;
+}
+.setting-volume > div {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 10px;
+}
+.volume-choice {
+  padding: 8px 2px;
+  border: 1px solid #537b6b;
+  border-radius: 8px;
+  background: #102b2e;
+  font-size: 13px;
+}
+.volume-choice.selected {
+  border-color: #d9bc7b;
+  background: #3b503a;
+  color: #f9e9be;
+}
+.settings-note {
+  color: #b9cbc0;
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 14px 0;
+}
+.danger-zone {
+  padding-top: 20px;
+  margin-top: 20px;
+  border-top: 1px solid #ad6d4e66;
+}
+.danger-zone small {
+  display: block;
+  margin-top: 9px;
+  color: #d0af96;
+  font-size: 12px;
+}
+.notification-dot {
+  position: absolute;
+  display: block;
+  top: 7px;
+  right: 7px;
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  min-height: 8px;
+  border-radius: 50%;
+  background: #ee7669;
+  box-shadow: 0 0 0 2px #173034;
+  pointer-events: none;
+  z-index: 6;
+}
+.bottom-tab .notification-dot {
+  top: 6px;
+  right: calc(50% - 22px);
+}
+.modal {
+  border-radius: 14px;
+  background: #193439;
+  box-shadow: 0 20px 80px #0008;
+  padding: 22px;
+  max-height: calc(100dvh - 32px);
+}
+.modal > p:not(.eyebrow),
+.modal-options strong {
+  font-size: 15px;
+}
+.modal-options button span {
+  font-size: 13px;
+}
+.overlay {
+  padding: 16px;
+}
+.handbook-head {
+  top: -22px;
+}
+.handbook-content > p {
+  font-size: 14px;
+}
+.handbook-list summary > span {
+  font-size: 15px;
+}
+.handbook-list summary > small {
+  font-size: 12px;
+}
+.foot-status {
+  font-size: 13px;
+  line-height: 1.7;
+}
+html[data-reduce-motion="true"] *,
+html[data-reduce-motion="true"] *::before,
+html[data-reduce-motion="true"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+html[data-scenery="false"] body::before {
+  background: #102328;
+}
+html[data-scenery="false"] .world-scene {
+  display: none;
+}
+html[data-scenery="false"] .meditating-art {
+  display: none;
+}
+html[data-scenery="false"] .cultivation-heading {
+  max-width: 100%;
+  min-height: 76px;
+}
+html[data-large-text="true"] button,
+html[data-large-text="true"] .setting-row b {
+  font-size: 17px;
+}
+html[data-large-text="true"] .panel p,
+html[data-large-text="true"] .guide-card p,
+html[data-large-text="true"] .setting-row small,
+html[data-large-text="true"] .investment small,
+html[data-large-text="true"] .settings-note,
+html[data-large-text="true"] .handbook-content > p {
+  font-size: 16px;
+}
+html[data-large-text="true"] .bottom-tab > b {
+  font-size: 16px;
+}
+@media (max-width: 355px) {
+  .identity h1 {
+    font-size: 21px;
+  }
+  .identity .eyebrow {
+    font-size: 9px;
+  }
+  .brand-heading {
+    gap: 0;
+  }
+  .masthead {
+    padding-left: 12px;
+    padding-right: 12px;
+    column-gap: 4px;
+  }
+  .resources {
+    margin-left: -12px;
+    margin-right: -12px;
+  }
+  .screen {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .investment {
+    grid-template-columns: 24px minmax(0, 1fr);
+  }
+  .investment > button,
+  .investment > .available-action {
+    grid-column: 2;
+    justify-self: start;
+  }
+  .setting-volume > div {
+    gap: 4px;
+  }
+  .volume-choice {
+    font-size: 12px;
+  }
+  .cultivation-links button {
+    gap: 4px;
+    font-size: 15px;
+  }
+  .next-btn {
+    font-size: 14px;
+  }
+  .management > summary > span {
+    display: none;
+  }
+  .life-strip {
+    font-size: 11px;
+  }
+}

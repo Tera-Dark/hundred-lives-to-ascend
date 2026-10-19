@@ -1,0 +1,11 @@
+{
+  "name": "hundred-lives-to-ascend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "python -m http.server 8000 --bind 127.0.0.1 -d prototype",
+    "test": "node --test prototype/next/tests/*.test.mjs",
+    "test:legacy": "node --test prototype/tests/*.test.mjs",
+    "check": "node scripts/check-project.mjs"
+  }
+}
