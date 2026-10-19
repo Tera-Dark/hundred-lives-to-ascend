@@ -1,0 +1,66 @@
+{
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "download": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
+  "author": "Kenney",
+  "license": "CC0-1.0",
+  "retrieved": "2026-10-19",
+  "archiveSha256": "f2193d072726d6758a5f7871b2dcc54dcce0d5c35c6f0a62f92549b327c81232",
+  "processing": "Mono; second-order 80–4500Hz bandpass; resample to 24000Hz; 4ms edge fades; peak <=0.5 and RMS <=0.13; WAV PCM16",
+  "assets": [
+    {
+      "id": "tap",
+      "file": "tap.wav",
+      "name": "轻点",
+      "original": "Audio/click_001.ogg",
+      "originalSha256": "ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9",
+      "seconds": 0.1,
+      "bytes": 4846,
+      "sha256": "621a18fdf3fa5d0c6c0ce0b2ab469763c00809de2c3792c3e6b64e6655a46599",
+      "level": 0.65
+    },
+    {
+      "id": "success",
+      "file": "success.wav",
+      "name": "成功",
+      "original": "Audio/confirmation_001.ogg",
+      "originalSha256": "063564703b6094d70718a3e787a55cc9141611e4ecd6b6637f8828f79b4a8c3a",
+      "seconds": 0.2899,
+      "bytes": 13958,
+      "sha256": "b0f8cb5a32dd3a6399fa4d66e497501f28866c5bb6cf8748fe18c28728cef331",
+      "level": 0.8
+    },
+    {
+      "id": "event",
+      "file": "event.wav",
+      "name": "新事件",
+      "original": "Audio/question_002.ogg",
+      "originalSha256": "46056f10c70dda860e93bd27b66f4d33c0b7154eff28def06471b50028efa5b3",
+      "seconds": 0.3325,
+      "bytes": 16006,
+      "sha256": "c6a5f9c5ed554af96d060781053b3cd84f6fb314189c285404025d5c6f0a0344",
+      "level": 0.72
+    },
+    {
+      "id": "breakthrough",
+      "file": "breakthrough.wav",
+      "name": "突破",
+      "original": "Audio/confirmation_004.ogg",
+      "originalSha256": "568967a3d9f8a8f6af54ea01729c4882284308f2a27d78c07ffd7ee0d6951661",
+      "seconds": 0.4904,
+      "bytes": 23584,
+      "sha256": "e7d1336a29a7b636e94c3d24fe2d1a6023c1f2b3e70854b74df8b7e48b97ad19",
+      "level": 0.78
+    },
+    {
+      "id": "error",
+      "file": "error.wav",
+      "name": "条件不足",
+      "original": "Audio/back_004.ogg",
+      "originalSha256": "c22e3c49f42c2a5ba6748e91283efe124f32822469c1258c3e5d7b3d7ab9361c",
+      "seconds": 0.073,
+      "bytes": 3548,
+      "sha256": "dd230bb65ba94dd73d084c411f9375fa5523e2013c372e935558eebbde71f9c0",
+      "level": 0.65
+    }
+  ]
+}

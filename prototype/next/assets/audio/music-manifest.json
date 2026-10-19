@@ -1,0 +1,15 @@
+{
+  "title": "古琴幽篁",
+  "source": "User-provided Suno MP3",
+  "sourceBytes": 4534678,
+  "sourceSha256": "64756169486a897a50b244cfc1b02db24369ea2d80937c6c66eb35b4a63bc194",
+  "file": "guqin-youhuang.mp3",
+  "bytes": 2379888,
+  "sha256": "edbcaf651b65d25d78f5126c8200209d89fdc99f1b1fcee015c08ace8eba265f",
+  "sampleRate": 44100,
+  "channels": 2,
+  "bitrateKbps": 96,
+  "seconds": 198.27351473922903,
+  "gainDb": -1.773970063733312,
+  "processing": "Stereo MP3 96kbps, RMS gain reduction, trim final 0.5s near silence; original untouched. Runtime dual-media 3-second crossfade, streamed on explicit enable."
+}

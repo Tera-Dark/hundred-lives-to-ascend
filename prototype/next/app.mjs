@@ -1,93 +1,530 @@
-import {createGame,restore,persist,advance,respond,begin,setCareer,setPlan,setStudy,buy,buyPerk,equip,setOrigin,reincarnate,lifeYear,rates,careerRole,npcState,PLANS,CAREERS,STUDIES,RELICS} from './game.mjs';
-const KEY='bsjl-v12-current';
-let game;try{game=restore(localStorage.getItem(KEY));}catch{game=createGame();}
-let tab='修行', logFilter='all',showRules=false;
-const root=document.getElementById('app');
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const num=v=>Number(v).toLocaleString('zh-CN',{maximumFractionDigits:1});
-const button=(label,cmd,arg='',opts={})=>`<button class="${opts.cls||'small-btn'}" data-cmd="${cmd}" data-arg="${esc(arg)}" ${opts.disabled?'disabled':''}>${label}</button>`;
-const fmt=(v,u='')=>`${num(v)}${u}`;
-const pct=v=>`${Math.round((Number(v)||0)*100)}%`;
-const ICON={
- time:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
- coin:'<circle cx="12" cy="12" r="9"/><path d="M9 9h6m-6 4h6m-3-8v14"/>',
- bolt:'<path d="m13 2-8 11h7l-1 9 8-11h-7z"/>',
- leaf:'<path d="M20 4C11 4 4 8 4 16a4 4 0 0 0 4 4c8 0 12-7 12-16Z"/><path d="M6 18c3-5 6-7 11-10"/>',
- cycle:'<path d="M20 7a8 8 0 0 0-14-2L4 7m0-4v4h4M4 17a8 8 0 0 0 14 2l2-2m0 4v-4h-4"/>',
- book:'<path d="M12 7c-3-2-6-2-9-1v13c3-1 6-1 9 1m0-13c3-2 6-2 9-1v13c-3-1-6-1-9 1M12 7v13"/>',
- mountain:'<path d="m3 19 7-12 4 6 2-3 5 9H3Z"/>',
- house:'<path d="m3 11 9-8 9 8M5 10v11h14V10M9 21v-7h6v7"/>',
- people:'<circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 6a3 3 0 0 1 0 6m1 2a5 5 0 0 1 3 5v1"/>',
- sword:'<path d="m3 21 6-6m1-5 9-7 2 2-7 9-4-4Zm-3 1 6 6M6 18l-3 3"/>',
- chart:'<path d="M4 19V12m5 7V5m5 14v-8m5 8V3"/>',
- shield:'<path d="m12 2 8 4v6c0 5-3 8-8 10-5-2-8-5-8-10V6z"/><path d="m8 12 3 3 5-6"/>',
- scroll:'<path d="M7 3h12v14a4 4 0 0 1-4 4H6a3 3 0 0 1-3-3V7a4 4 0 0 1 4-4Zm0 0v14a3 3 0 0 1-3 3m6-11h6m-6 4h5"/>',
- compass:'<circle cx="12" cy="12" r="9"/><path d="m16 8-3 7-5 2 3-7z"/>',
- bowl:'<path d="M4 13a8 8 0 0 0 16 0H4zm2 5h12M6 4v5m6-6v6m6-5v5"/>',
- target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
- arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',
- bag:'<path d="M4 10h16v11H4zm4 0V7a4 4 0 0 1 8 0v3"/>',
- lock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
- spark:'<path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5Z"/>',
- flag:'<path d="M5 3v18m0-16h14l-4 5 4 5H5"/>'
+/** 浏览器协调入口：游戏命令、视图记忆、设备偏好、存档传输。 */
+import { createGame, persist } from "./game.mjs";
+import {
+  loadGame,
+  createSaveWriter,
+  storageKey,
+} from "./application/storage.mjs";
+import { initializeGuide } from "./application/onboarding.mjs";
+import { createUiState, dispatch } from "./application/commands.mjs";
+import {
+  loadPreferences,
+  savePreferences,
+  DEFAULT_PREFERENCES,
+  confirmationFor,
+} from "./application/preferences.mjs";
+import { nextDelta } from "./application/selectors.mjs";
+import {
+  progressSnapshot,
+  commandFeedback,
+  MUTATING_COMMANDS,
+} from "./application/feedback.mjs";
+import {
+  inspectImport,
+  commitReplacement,
+  readReplacementBackup,
+  MAX_IMPORT_BYTES,
+} from "./application/save-transfer.mjs";
+import { createAudioFeedback } from "./browser/audio.mjs";
+import {
+  decorateNotifications,
+  controlIdentity,
+  findControl,
+  trapDialogKey,
+} from "./browser/dom.mjs";
+import {
+  createViewMemory,
+  PAGE_HASH,
+  pageFromHash,
+  allowedPage,
+} from "./browser/view-state.mjs";
+import { renderApp } from "./ui/render.mjs";
+
+const root = document.getElementById("app");
+const key = storageKey(location.search);
+const unavailable = {
+  getItem() {
+    throw Error("unavailable");
+  },
+  setItem() {
+    throw Error("unavailable");
+  },
 };
-const icon=(name,cls='')=>`<svg class="ico ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[name]||ICON.spark}</svg>`;
-const btn=(label,cmd,arg='',disabled=false,cls='')=>button(label,cmd,arg,{disabled,cls:cls||'small-btn'});
-const number=(v,d=1)=>Number.isFinite(Number(v))?Number(v).toLocaleString('zh-CN',{maximumFractionDigits:d}):'—';
-function section(content,cls=''){return `<section class="panel ${cls}">${content}</section>`;}
-function title(name,detail='',ic=''){return `<div class="panel-head"><h2>${ic?icon(ic):''}${name}</h2>${detail?`<span class="panel-meta">${detail}</span>`:''}</div>`;}
-function progress(value,limit,show=true){let v=Math.max(0,Number(value)||0), m=Math.max(1,Number(limit)||1);return `<div class="progress-track" role="progressbar" aria-valuenow="${Math.min(m,v)}" aria-valuemin="0" aria-valuemax="${m}"><i style="width:${Math.min(100,100*v/m).toFixed(1)}%"></i></div>${show?`<span class="progress-label">${number(v)} / ${number(limit)}</span>`:''}`;}
-function top(){const l=game.life,r=rates(game);const remaining=Math.max(0,l.lifeCap-l.age);return `<header class="new-top"><div class="brand-line"><div class="brand-sigil">劫</div><div class="brand-text"><small>照世碑 · 浮岚界</small><h1>百世劫录</h1></div><span class="version-small">V1.3 UI</span></div><div class="hero-stats"><div>${icon('time')} 世界 <b>${game.worldYear}年</b></div><div>第${l.id}世 · <b>${l.age}/${l.lifeCap}岁</b></div><span class="realm-badge">${l.realm}</span></div><div class="life-track"><span style="width:${Math.min(100,l.age/l.lifeCap*100).toFixed(1)}%"></span></div><div class="subline"><span>${l.path==='dan'?'丹修':l.path==='xuan'?'玄修':'待选主修'} · ${careerRole(game)} · Lv.${l.level[l.career]}</span><span>余寿 ${remaining}年</span></div></header><div class="resources">${[["coin","灵石",number(l.money),`${r.net>=0?'+':''}${number(r.net)}/年`],["bolt","修为",number(l.qi),`+${number(r.qi)}/年`],["leaf","灵材",number(l.herbs),"库存"],["cycle","轮回点",number(game.meta.rp),"永久"]].map(([ic,name,n,s])=>`<div class="res"><div class="res-label">${icon(ic)} ${name}</div><b>${n}</b><small>${s}</small></div>`).join('')}</div>`;}
-function activeAction(){const a=game.life.action;return a?section(`<div class="action-current">${icon('time')}<div><b>行动进行中</b><span>还需 ${a.remaining} 年 · 遇重要事件先暂停</span></div></div>`,'compact'):'';}
-function planBox(){const l=game.life,r=rates(game),p=PLANS[l.plan];let choices=[['earn','coin','谋生'],['balance','chart','均衡'],['cultivate','bolt','苦修'],['study','book','研习']];return section(title('修行计划','每年自动执行','time')+`<div class="plan-options">${choices.map(([id,ic,name])=>`<button data-cmd="plan" data-arg="${id}" class="plan-choice ${l.plan===id?'selected':''}" aria-pressed="${l.plan===id}">${icon(ic)}<b>${name}</b></button>`).join('')}</div><div class="alloc-compact"><span style="width:${pct(p.work)}"></span><span style="width:${pct(p.train)}"></span><span style="width:${pct(p.study)}"></span></div><div class="allocation-values"><span>营生 ${pct(p.work)}</span><span>修行 ${pct(p.train)}</span><span>研习 ${pct(p.study)}</span></div><div class="compact-metrics"><span>净收入 <b>${r.net>=0?'+':''}${number(r.net)}</b>/年</span><span>修为 <b>+${number(r.qi)}</b>/年</span><span>研习 <b>+${number(r.research)}</b>/年</span></div>`,'plan-panel');}
-function cultivatePage(){const l=game.life,req=l.realm==='凡人'?180:l.realm==='炼气'?1650-l.foundationReduction:null;const level=l.realm==='凡人'?'引气入体':l.realm==='炼气'?'筑基':'当前已达到试玩境界上限';const ready=l.realm==='炼气'&&l.qi>=req&&l.money>=45&&l.herbs>=3;
-let body=activeAction()+section(title('境界突破','法 · 核心成长','bolt')+`<div class="break-level"><div><small>当前境界</small><strong>${l.realm}</strong></div><div><small>下一境</small><strong>${l.realm==='凡人'?'炼气':l.realm==='炼气'?'筑基':'待开放'}</strong></div></div>${req!==null?`<div class="meter-head"><span>修为进度</span><b>${number(Math.min(l.qi,req))} / ${number(req)}</b></div>${progress(l.qi,req,false)}<div class="req-row">${l.realm==='炼气'?`<span class="${l.money>=45?'pass':'missing'}">${icon('coin')} ${number(l.money)}/45灵石</span><span class="${l.herbs>=3?'pass':'missing'}">${icon('leaf')} ${l.herbs}/3灵材</span><span>${icon('time')} 2年</span>`:`<span class="pass">修为达到180自动突破</span>`}</div>`:'<p class="muted">更多境界将在后续开放。</p>'}<div class="btn-row">${btn('筑基突破','action','foundation',!ready,'action-btn primary')}${l.path==='xuan'?btn('闭关推演 ·18石/2年','action','xuan',l.realm!=='炼气'||l.money<18||l.flags.includes('xuan-used'),'action-btn secondary'):btn('查看护脉丹','tab','应劫',false,'action-btn secondary')}</div>`,'break-panel');
-body+=planBox();const current=STUDIES[l.study];body+=section(title('研习法门',`当前：${current?.name||'未选择'}`,'book')+`<div class="research-current"><div><strong>${current?.name||'无'}</strong><span>${current?.desc||''}</span></div><b>${l.studied.includes(l.study)?'已完成':`${number(l.studyProgress[l.study])}/${current?.cost||0}`}</b></div>${progress(l.studyProgress[l.study],current?.cost||1,false)}<div class="study-pills">${Object.entries(STUDIES).map(([id,st])=>`<button data-cmd="study" data-arg="${id}" class="study-pill ${l.study===id?'selected':''}" ${l.studied.includes(id)?'disabled':''}>${icon('book')} ${st.name}${l.studied.includes(id)?' ✓':''}</button>`).join('')}</div>`,'compact');
-body+=section(title('生活投资','财 × 地','house')+`<div class="list-condensed">${[["bowl",'灵食',l.food==='spirit'?'灵米药膳':'粗茶淡饭','food',12,l.food==='spirit','效率+8% · 维护0.7石/年'],['house','居所',l.home==='cottage'?'清静小院':'借宿棚屋','home',28,l.home==='cottage','修行+10% · 维护0.9石/年']].map(([ic,n,state,id,cost,owned,effect])=>`<div class="investment"><span class="square-icon">${icon(ic)}</span><div class="investment-info"><b>${n} · ${state}</b><small>${effect}</small></div>${btn(owned?'已拥有':l.money<cost?`差${number(cost-l.money)}石`:`${cost}石`,'buy',id,owned||l.money<cost,'mini-action')}</div>`).join('')}</div>`,'compact');return body;}
-function fatePage(){const l=game.life,r=rates(game);let lv=l.level[l.career], xp=l.xp[l.career],limit=10+lv*6;
-let body=section(title('营生职业','财 · 持续成长','coin')+`<div class="career-main"><div><small>当前职位</small><strong>${careerRole(game)}</strong><span>${CAREERS[l.career].name}</span></div><span class="career-lv">Lv.${lv}</span></div><div class="meter-head"><span>职业经验</span><b>${number(xp)}/${number(limit)}</b></div>${progress(xp,limit,false)}<div class="career-stats"><div><small>灵石净收入</small><b>${r.net>=0?'+':''}${number(r.net)} <i>/年</i></b></div><div><small>营生经验</small><b>+${number(r.xp)} <i>/年</i></b></div><div><small>历史最高</small><b>Lv.${game.meta.bestCareer[l.career]}</b></div></div><div class="career-switch">${Object.entries(CAREERS).map(([id,c])=>`<button data-cmd="career" data-arg="${id}" class="career-choice ${id===l.career?'selected':''}">${icon(id==='merchant'?'bag':'leaf')}<span><b>${c.name}</b><small>${c.roles[l.level[id]>=5?1:0]} · Lv.${l.level[id]}</small></span><span>${id===l.career?'经营中':'切换'}</span></button>`).join('')}</div>`);
-body+=section(title('地域与洞府','地','mountain')+`<div class="list-condensed">${[['town','浮潮集','商行收入较高'],['valley','青药谷南麓','采药与修炼更有利']].map(([id,n,desc])=>`<div class="location-row"><span class="square-icon">${icon('mountain')}</span><div><b>${n}</b><small>${desc}</small></div>${l.region===id?'<span class="status-tag">当前</span>':btn('8石 ·2年','move',id,l.money<8,'mini-action')}</div>`).join('')}</div>`,'compact');
-const gu=npcState(game,'gu'),shen=npcState(game,'shen');body+=section(title('同道旧约','侣','people')+`<div class="list-condensed">${[[gu,'药谷药师','leaf'],[shen,'浮潮行商','bag']].map(([n,job,ic])=>`<div class="friend-row"><span class="square-icon">${icon(ic)}</span><div><b>${n.name}</b><small>${job} · ${n.status}${n.alive?` · ${n.age}岁`:''}</small></div><span class="${n.helped?'pass':'muted'}">${n.helped?'已有旧约':'尚未立约'}</span></div>`).join('')}</div>`,'compact');
-body+=section(title('机缘探索','3年与一定灵石成本','compass')+`<div class="btn-row">${btn('荒谷历练 ·8石','action','explore',l.money<8||l.flags.includes('explored'),'action-btn secondary')}${btn('寻回前世旧玉 ·8石','action','jade',game.world.jade!=='stashed'||l.money<8,'action-btn secondary')}</div>`,'compact');
-body+=section(title('灵藏遗物',`${game.meta.equipped.length}/2 装备`,'spark')+`<div class="list-condensed">${Object.entries(RELICS).filter(([id])=>game.meta.relics.includes(id)).map(([id,item])=>`<div class="relic-row"><span class="square-icon">${icon('spark')}</span><div><b>${item.name}</b><small>${item.desc}</small></div>${btn(game.meta.equipped.includes(id)?'已佩戴':'装备','equip',id,game.meta.equipped.includes(id)||game.meta.equipped.length>=2,'mini-action')}</div>`).join('')}</div>`,'compact');return body;}
-function calamityPage(){const l=game.life,first=game.world.tide==='waiting',done=game.world.veinDone,until=first?60-game.worldYear:95-game.worldYear;const prepared=l.realm==='筑基'||Boolean(l.pill);let body=section(title('下一场危机',first?'世界历史 · 仅一次':'地方余波','shield')+`<div class="calamity-head"><div><span>${first?'灵潮逆涌':done?'余潮断脉 · 已结算':'余潮断脉'}</span><strong>${done?'已结算':until>=0?`${until} 年`:'已发生'}</strong></div><small>${done?'记录已经写入世界史':until<=15?'临近危险，请确认生存路线':'筹备期'}</small></div><div class="calamity-flags"><span class="${l.realm==='筑基'?'safe':'danger'}">${icon('shield')} 筑基${l.realm==='筑基'?' ✓':'未达'}</span><span class="${l.pill?'safe':'danger'}">${icon('bowl')} 护脉丹${l.pill?' ✓':'未制'}</span></div>${first?`<p class="short-hint">${prepared?'已满足首劫生存条件':'首劫需筑基或提前炼制护脉丹'}</p>`:done?'<p class="short-hint">危机已过去，当前世界会延续结果。</p>':'<p class="short-hint">可用筑基、药材调脉或安全撤离应对。</p>'}`,'calamity-panel');
-body+=section(title('护脉丹方',`现有灵材 ${l.herbs}`,'bowl')+`<div class="list-condensed">${[['common','普通护脉','55石 · 5材 · 3年'],...(l.path==='dan'?[['economy','省材护脉','55石 · 4材 · 4年'],['long','驻元护脉','80石 · 5材 · 5年 · 寿限140']]:[])].map(([mode,n,detail])=>`<div class="recipe-row"><span class="square-icon">${icon('bowl')}</span><div><b>${n}</b><small>${detail}</small></div>${btn(l.pill?'已完成':'炼制','pill',mode,!canPill(mode),'mini-action')}</div>`).join('')}</div>`,'compact');
-if(l.trialToken)body+=section(title('心定印','本世一次','spark')+`<div class="btn-row">${btn('+120修为 ·2年','action','trial-boon',false,'action-btn secondary')}${btn('+1灵材 ·10石/2年','action','trial-herb',l.money<10,'action-btn secondary')}</div>`,'compact');return body;}
-function canPill(mode){const l=game.life;return !l.pill&&l.realm!=='凡人'&&(mode==='common'||l.path==='dan')&&l.money>=(mode==='long'?80:55)&&l.herbs>=(mode==='economy'?4:5);}
-function rebirthPage(){const l=game.life;let body=section(title('轮回传承',`可用 ${game.meta.rp} RP`,'cycle')+`<div class="career-stats three"><div><small>已历人生</small><b>${game.meta.lives.length}</b></div><div><small>遗物收录</small><b>${game.meta.relics.length}/4</b></div><div><small>人生纪录</small><b>${game.meta.achievements.length}</b></div></div><div class="list-condensed">${[['learn','旧业识途','职业经验+10%',3],['meridian','旧识经脉','修为产出+15%',4],['auto','生财有道','55灵石自动转苦修',5]].map(([id,n,d,cost])=>`<div class="perk-row"><span class="square-icon">${icon('spark')}</span><div><b>${n}</b><small>${d}</small></div>${btn(game.meta.perks.includes(id)?'已解锁':`${cost} RP`,'perk',id,game.meta.perks.includes(id)||game.meta.rp<cost,'mini-action')}</div>`).join('')}</div><div class="rebirth-buttons">${btn(game.status==='ended'?'进入下一世':'主动轮回','reincarnate','',game.status==='boundary'||game.status==='playing'&&(lifeYear(game)<25||game.pending||game.life.action),'action-btn primary')}</div>`);
-body+=section(title('百世札记',`事件 ${game.journal.length} 条`,'scroll')+`<div class="log-filter">${[['all','全部'],['world','世界'],['npc','故人'],['career','营生'],['breakthrough','突破'],['legacy','遗物']].map(([id,n])=>btn(n,'filter',id,false,`filter-chip ${logFilter===id?'selected':''}`)).join('')}</div><div class="log-list">${game.journal.filter(x=>logFilter==='all'||x.type===logFilter).slice(-12).reverse().map(x=>`<div class="log-entry"><small>第${x.lifeId}世 · ${x.worldYear}年</small><span>${esc(x.text)}</span></div>`).join('')||'<div class="short-hint">此类记录尚为空</div>'}</div>`,'compact');body+=section(title('测试管理','','flag')+btn('重开本版世界线','reset','',false,'action-btn secondary'),'compact');return body;}
-function statusPane(){if(game.status==='ended')return `<div class="overlay"><div class="modal"><p class="eyebrow">又一世 · 照世碑</p><h2>这一世已经结束</h2><p>${esc(game.notice)}</p><p class="muted">旧世界仍然向前。下一世的职业、研究与世界人物不会自动回到原样。</p>${button('带着历史进入下一世','reincarnate','',{cls:'main-btn wide'})}</div></div>`;if(game.status==='boundary')return `<div class="overlay"><div class="modal"><h2>原型内容边界</h2><p>世界历160年之后尚未制作；当世与历史安全保存，没有凭空死亡或领取RP。</p>${button('导出/保存当前进度','save','',{cls:'small-btn'})}</div></div>`;if(!game.pending)return '';return modal(game.pending);}
-function modal(type){const l=game.life;let title='',desc='',ops=[],extra='';
-const op=(text,arg,disabled=false,detail='')=>ops.push({text,arg,disabled,detail});
-switch(type){
-case'intro':extra=`<div class="birth-choice"><p class="muted">先选择出身（不限制之后转岗）</p><div class="btn-grid"><button class="plan ${l.origin==='market'?'selected':''}" data-cmd="origin" data-arg="market">浮潮散修<small>坊市较便于赚钱</small></button><button class="plan ${l.origin==='herbal'?'selected':''}" data-cmd="origin" data-arg="herbal">药谷学徒<small>有1份起步灵材</small></button></div></div>`;title=`第${l.id}世 · 修行从谋生开始`;desc='选择主修。营生职业可随时转岗；这一世的修行方式则决定你擅长用境界还是药道应劫。';op('玄修 · 以境破劫','xuan',false,'更擅长稳定突破与成长');op('丹修 · 以药续命','dan',false,'保留灵材，允许省材或驻元丹方');break;
-case'materials18':title='药庐的委托';desc='你得到一次真正可用的机会，当前阶段缺灵材还是灵石？';op('领取3份灵材','herbs');op('把药材卖成22灵石','money');break;
-case'materials34':title='荒谷的两条路';desc='旧山道留下了材料与修为两种机缘，你没有足够时间两者兼得。';op('获得3份灵材','herbs');op('静心参悟 +180修为','qi');break;
-case'npc':title='修仙路上的同行者';desc='两个年轻人正在为自己珍视的东西忙碌。你的帮助需要真实的时间和资源；他们也会随世界一起变老。';op('帮顾南枝守药圃 ·4石/1材/2年','gu',l.money<4||l.herbs<1);op('帮沈望川护商队 ·12石/1年','shen',l.money<12);op('各自谋生，暂不立约','ignore');break;
-case'jade':title='旧井旁的玉';desc=l.id===1?'青苔下埋着一块刻有奇异纹路的护心玉。它不是可跨世界复制的永久增益图谱。':'旧井仍在。前世留下的器物也许就藏在这里。';op('收下旧玉/记录旧迹','ok');break;
-case'trial':title='心魔问境';desc='对任何道途而言，迈出下一步都需要放弃某些东西。成功获得本世一次性「心定印」资格，不能反复刷永久碎片。';op('以修为镇心 ·至少900，消耗150','qi',l.qi<900);op('以药稳神 ·15石/1材','herbs',l.money<15||l.herbs<1);op('暂退，不领取命关收益','retreat');break;
-case'warning':title='灵潮将至';desc='天衡星环的灵潮将在世界60年袭来。筑基或提前炼成护脉丹可以幸存，缺少准备会陨落。';op('查看计划，继续准备','ok');break;
-case'tide':title='浮岚界 · 灵潮逆涌';desc=l.realm==='筑基'||l.pill?'你做的准备足以对抗灵潮。世界将记住这一刻。':'你的境界与护脉准备仍不足以抵御这场历史灾劫。此世或将在这里终结。';op('面对这场历史','face');break;
-case'past':title='前世在这片土地上的回响';desc='往昔之人已经老去，有些约定却成为留给后世的线索与凭证。今世的你可以凭照世碑寻找它们。';if(game.world.npc.gu.helped)op('追查药谷遗方 ·辨草进度+7/灵材+1','gu-record');if(game.world.npc.shen.helped)op('核对商路旧账 ·灵石+12','shen-record');op('继续今世的道路','ok');break;
-case'vein-warning':title='余潮断脉的预兆';desc='灵潮后的地脉依然不稳。世界95年将有一场地方危机，这不是世界60年灵潮重播。';op('提前查看应劫路线','ok');break;
-case'vein':title='世界95年 · 余潮断脉';desc='地方灵脉将断，你可以付出修为与财物修复它，也可以撤离，让后世面对另一种地区生态。';op('筑基稳脉 ·10石/2年','cult',l.realm!=='筑基'||l.money<10);op('药材调脉 ·35石/2材/3年','med',l.money<35||l.herbs<2);op('支付15灵石撤离 ·1年','leave',l.money<15);op('3年救济劳动后撤离','labor');break;
-default:title='命运抉择';op('继续','ok');}
-return `<div class="overlay"><div class="modal"><p class="eyebrow">浮岚纪事 · 第${l.id}世</p><h2>${title}</h2><p>${desc}</p>${extra}<div class="modal-options">${ops.map(x=>`<button data-cmd="reply" data-arg="${x.arg}" ${x.disabled?'disabled':''}><strong>${x.text}</strong>${x.detail?`<span>${x.detail}</span>`:''}</button>`).join('')}</div></div></div>`;}
-function nextDelta(){const l=game.life,r=rates(game),w=game.worldYear,y=lifeYear(game),target=[];
-  if(l.action?.remaining>0)target.push(l.action.remaining);
-  for(const n of (l.id>1?[12,18,22,24,34,39]:[18,22,24,34,39]))if(n>y)target.push(n-y);
-  if(game.world.tide==='waiting'){for(const n of [45,60])if(n>w)target.push(n-w);}else if(!game.world.veinDone){for(const n of [92,95])if(n>w)target.push(n-w);}
-  if(w<160)target.push(160-w);
-  if(l.realm==='凡人'&&r.qi>0&&l.qi<180)target.push(Math.ceil((180-l.qi)/r.qi));
-  const rankReq=10+l.level[l.career]*6;
-  if(r.xp>0)target.push(Math.ceil((rankReq-l.xp[l.career])/r.xp));
-  const study=STUDIES[l.study];
-  if(study&&!l.studied.includes(l.study)&&r.research>0)target.push(Math.ceil((study.cost-l.studyProgress[l.study])/r.research));
-  const positive=target.filter(n=>Number.isFinite(n)&&n>0);
-  return Math.max(1,Math.min(positive.length?Math.min(...positive):5,400));}
-function footer(){const disabled=game.status!=='playing'||Boolean(game.pending);return `<div class="bottom-fixed"><div class="next-buttons">${btn('1年','advance','1',disabled,'next-btn')}${btn('5年','advance','5',disabled,'next-btn')}${btn(`${icon('arrow')} 下一节点`,'advance','next',disabled,'next-btn emph')}</div><nav class="bottom-tabs" aria-label="主要页面">${[['修行','bolt'],['机缘','spark'],['应劫','shield'],['轮回','cycle']].map(([id,ic])=>`<button data-cmd="tab" data-arg="${id}" class="bottom-tab ${tab===id?'active':''}" aria-current="${tab===id?'page':'false'}">${icon(ic)}<span>${id}</span></button>`).join('')}</nav></div>`;}
-function currentGoal(){const l=game.life;if(game.status==='ended')return '本世已终 · 可进入下一世';if(game.status==='boundary')return '世界160年 · 原型安全终点';if(l.action)return `行动中 · 还需${l.action.remaining}年`;if(l.realm==='凡人')return `引气入体 · ${number(l.qi)}/180修为`;if(game.world.tide==='waiting'&&game.worldYear<60)return `首劫剩${60-game.worldYear}年 · ${l.realm==='筑基'||l.pill?'已经具备生路':'优先突破或炼丹'}`;if(game.world.veinDone)return '余潮已定 · 继续修炼或轮回';return '寻找前世线索 · 筹备余潮';}
-function render(){const body=tab==='修行'?cultivatePage():tab==='机缘'?fatePage():tab==='应劫'?calamityPage():rebirthPage();root.innerHTML=`<div class="shell new-ui">${top()}<main class="screen new-screen"><button class="goal-compact" data-cmd="tab" data-arg="${tab==='修行'?'应劫':'修行'}">${icon('target')}<span><small>当前目标</small><b>${esc(currentGoal())}</b></span>${icon('arrow')}</button>${body}<div class="foot-status">${icon('scroll')} <span>${esc(game.notice)}</span></div></main>${footer()}${statusPane()}</div>`;try{localStorage.setItem(KEY,persist(game));}catch(e){console.warn('Local save unavailable:',e)}}
-root.addEventListener('click',e=>{const b=e.target.closest('button[data-cmd]');if(!b||b.disabled)return;let {cmd,arg}=b.dataset;let ok=true;switch(cmd){case'tab':tab=arg;break;case'filter':logFilter=arg;break;case'advance':advance(game,arg==='next'?nextDelta():Number(arg));break;case'reply':ok=respond(game,arg);break;case'plan':ok=setPlan(game,arg);break;case'career':ok=setCareer(game,arg);break;case'origin':ok=setOrigin(game,arg);break;case'study':ok=setStudy(game,arg);break;case'buy':ok=buy(game,arg);break;case'perk':ok=buyPerk(game,arg);break;case'equip':ok=equip(game,arg);break;case'pill':ok=begin(game,'pill',arg);break;case'move':ok=begin(game,'move',arg);break;case'action':ok=begin(game,arg);break;case'reincarnate':ok=reincarnate(game);break;case'reset':if(window.confirm('确定清空当前V1.2测试存档，重新创建第一世？此操作不可恢复。')){game=createGame();tab='修行';logFilter='all';}break;case'save':break;default:ok=false;}
-if(!ok)game.notice='当前条件不足，或尚有必须先处理的事件/跨年行动。';render();});
-render();
+let storage, session;
+try {
+  storage = window.localStorage;
+} catch {
+  storage = unavailable;
+}
+try {
+  session = window.sessionStorage;
+} catch {
+  session = unavailable;
+}
+const loaded = loadGame(storage, key),
+  writer = createSaveWriter(storage, key);
+let game = loaded.game,
+  warning = loaded.warning,
+  writeProtected = Boolean(loaded.writeProtected);
+let ui = createUiState(),
+  preferenceWarning = "",
+  preferences;
+({ preferences, warning: preferenceWarning } = loadPreferences(storage));
+const memory = createViewMemory(session, key);
+const initialPage =
+  pageFromHash(location.hash) ||
+  (preferences.rememberPage ? memory.page : "修行");
+if (game.pending !== "intro" && allowedPage(game, initialPage))
+  ui.tab = initialPage;
+ui.detailsOpen = preferences.rememberPage && memory.details;
+ui.hasBackup = Boolean(readReplacementBackup(storage, key).game);
+let opener = null,
+  toastTimer,
+  scrollTimer,
+  preferenceDirty = false;
+const audio = createAudioFeedback({ onChange: updateAudioStatus });
+function updateAudioStatus() {
+  const status = root.querySelector("[data-audio-status]");
+  if (status)
+    status.textContent =
+      audio.status ||
+      (preferences.music
+        ? "点击任意按钮恢复《古琴幽篁》。"
+        : "音乐默认关闭；切到后台暂停，返回后继续。");
+}
+function sound(kind = "tap") {
+  void audio.unlock(preferences).then(() => {
+    audio.play(kind);
+    updateAudioStatus();
+  });
+}
+function persistGame() {
+  if (writeProtected) return;
+  warning = writer.write(game);
+  if (!warning)
+    ui.savedAt = `已保存 ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`;
+}
+function remember() {
+  memory.remember(ui.tab, window.scrollY, ui.detailsOpen);
+  memory.save();
+}
+function paint({ focusDialog = false } = {}) {
+  const identity = controlIdentity(document.activeElement);
+  const hadDialog = Boolean(root.querySelector('[role="dialog"]'));
+  ui.preferences = preferences;
+  ui.audioStatus = audio.status;
+  const html = document.documentElement;
+  for (const [attribute, value] of Object.entries({
+    largeText: preferences.largeText,
+    reduceMotion: preferences.reduceMotion,
+    scenery: preferences.showScenery,
+    compact: preferences.compactLayout,
+  }))
+    html.dataset[attribute] = String(value);
+  root.innerHTML = renderApp(
+    game,
+    ui,
+    [
+      warning,
+      preferenceWarning,
+      ui.externalChanged
+        ? "此存档已在另一个窗口更新。请刷新后继续，避免覆盖新进度。"
+        : "",
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
+  decorateNotifications(root, game, preferences.redDots);
+  if (ui.externalChanged)
+    for (const button of root.querySelectorAll("button[data-cmd]"))
+      if (MUTATING_COMMANDS.has(button.dataset.cmd)) button.disabled = true;
+  const musicButton = root.querySelector(".music-shortcut");
+  if (musicButton) {
+    musicButton.setAttribute("aria-pressed", String(preferences.music));
+    musicButton.setAttribute(
+      "aria-label",
+      preferences.music ? "暂停背景音乐" : "开启背景音乐",
+    );
+  }
+  const dialog = root.querySelector('[role="dialog"]');
+  html.classList.toggle("modal-open", Boolean(dialog));
+  if (dialog && (!hadDialog || focusDialog)) {
+    if (!hadDialog && identity) opener = identity;
+    dialog
+      .querySelector("button:not(:disabled)")
+      ?.focus({ preventScroll: true });
+  } else if (!dialog && hadDialog) {
+    findControl(root, opener)?.focus({ preventScroll: true });
+    opener = null;
+  } else findControl(root, identity)?.focus({ preventScroll: true });
+}
+function toast(message, error = false) {
+  if (!message || (!preferences.feedback && !error)) return;
+  const target = root.querySelector(".toast");
+  if (!target) return;
+  clearTimeout(toastTimer);
+  target.textContent = message;
+  target.hidden = false;
+  target.classList.toggle("is-error", error);
+  toastTimer = setTimeout(
+    () => {
+      const visible = root.querySelector(".toast");
+      if (visible) visible.hidden = true;
+    },
+    error ? 6500 : 4000,
+  );
+}
+function persistPreferences() {
+  preferenceWarning = savePreferences(storage, preferences);
+  preferenceDirty = false;
+}
+function exportProgress() {
+  const url = URL.createObjectURL(
+      new Blob([persist(game)], { type: "application/json" }),
+    ),
+    link = document.createElement("a");
+  link.href = url;
+  link.download = `百世劫录-世界${game.worldYear}年.json`;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast("进度已导出，可保留这份文件作备份。");
+  sound("success");
+}
+function historyPage(replace = false) {
+  const url = `${location.pathname}${location.search}#${PAGE_HASH[ui.tab]}`;
+  if (location.hash !== `#${PAGE_HASH[ui.tab]}`)
+    (replace
+      ? history.replaceState.bind(history)
+      : history.pushState.bind(history))({ page: ui.tab }, "", url);
+}
+function scrollToResult(result, oldPage, command) {
+  if (result.scroll && result.scroll !== "top") {
+    requestAnimationFrame(() => {
+      const target = root.querySelector(result.scroll);
+      target?.scrollIntoView({
+        block: "start",
+        behavior: preferences.reduceMotion ? "instant" : "smooth",
+      });
+      const heading = target?.querySelector("h2");
+      if (heading) {
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+      }
+    });
+  } else if (
+    command === "tab" &&
+    oldPage !== ui.tab &&
+    preferences.rememberPage
+  )
+    window.scrollTo({ top: memory.position(ui.tab), behavior: "instant" });
+  else if (result.scroll === "top")
+    window.scrollTo({ top: 0, behavior: "instant" });
+}
+function previewReplacement(next, label) {
+  const l = next.life;
+  ui.confirm = {
+    cmd: "import-apply",
+    arg: "",
+    candidate: next,
+    message: `${label}\n第${l.id}世 · 世界${next.worldYear}年 · ${l.realm}\n寿元${l.age}/${l.lifeCap} · 灵石${Number(l.money).toFixed(1)}\n将替换当前槽进度，当前进度会先保存为可恢复备份。设备设置保持不变。`,
+  };
+  paint({ focusDialog: true });
+}
+function replaceGame(next) {
+  const result = commitReplacement(storage, key, game, next);
+  if (!result.ok) {
+    ui.confirm = null;
+    paint();
+    toast(result.error, true);
+    return;
+  }
+  game = next;
+  writer.accept(game);
+  writeProtected = false;
+  warning = "";
+  ui = createUiState();
+  ui.tab = game.pending === "intro" ? "修行" : "设置";
+  ui.hasBackup = true;
+  ui.savedAt = "已导入并保存";
+  memory.remember(ui.tab, 0, false);
+  memory.save();
+  historyPage(true);
+  paint({ focusDialog: true });
+  window.scrollTo({ top: 0 });
+  sound("success");
+  toast("替换完成；可在设置中恢复替换前备份。");
+}
+function execute(
+  command,
+  arg = "",
+  { confirmed = false, candidate = null } = {},
+) {
+  if (
+    ui.externalChanged &&
+    (MUTATING_COMMANDS.has(command) ||
+      ["reset", "import-apply"].includes(command))
+  ) {
+    toast("请先刷新此窗口，载入另一窗口的新进度。", true);
+    return;
+  }
+  const selected = {
+    plan: game.life.plan,
+    study: game.life.study,
+    career: game.life.career,
+  };
+  if (Object.hasOwn(selected, command) && selected[command] === arg) {
+    sound();
+    toast("当前已经采用此安排。");
+    return;
+  }
+  if (command === "reload") {
+    location.reload();
+    return;
+  }
+  if (command === "preference" || command === "preferences-reset") {
+    if (command === "preferences-reset")
+      preferences = { ...DEFAULT_PREFERENCES };
+    else if (typeof preferences[arg] === "boolean")
+      preferences[arg] = !preferences[arg];
+    persistPreferences();
+    audio.update(preferences);
+    paint();
+    sound();
+    return;
+  }
+  if (command === "audio-test") {
+    sound(
+      ["tap", "success", "event", "breakthrough", "error"].includes(arg)
+        ? arg
+        : "success",
+    );
+    return;
+  }
+  if (command === "music-restart") {
+    if (preferences.music)
+      void audio.unlock(preferences).then(() => audio.restartMusic());
+    return;
+  }
+  if (command === "save") {
+    exportProgress();
+    return;
+  }
+  if (command === "import-open") {
+    root.querySelector("#save-import")?.click();
+    return;
+  }
+  if (command === "backup-restore") {
+    const backup = readReplacementBackup(storage, key);
+    if (backup.error) {
+      toast(backup.error, true);
+      return;
+    }
+    previewReplacement(backup.game, "恢复替换前备份");
+    return;
+  }
+  if (command === "confirm-cancel") {
+    ui.confirm = null;
+    paint();
+    sound();
+    return;
+  }
+  if (command === "confirm-accept") {
+    const pending = ui.confirm;
+    if (!pending) return;
+    ui.confirm = null;
+    execute(pending.cmd, pending.arg, {
+      confirmed: true,
+      candidate: pending.candidate,
+    });
+    return;
+  }
+  if (command === "import-apply") {
+    if (confirmed && candidate) replaceGame(candidate);
+    return;
+  }
+  if (command === "reset") {
+    if (
+      !window.confirm(
+        "重开当前世界？现有进度会先存为可恢复备份。建议另行导出重要进度。",
+      )
+    )
+      return;
+    const next = createGame();
+    initializeGuide(next);
+    replaceGame(next);
+    return;
+  }
+  if (!confirmed) {
+    const message = confirmationFor(
+      game,
+      preferences,
+      command,
+      arg,
+      nextDelta(game),
+    );
+    if (message) {
+      ui.confirm = { cmd: command, arg, message };
+      paint({ focusDialog: true });
+      sound();
+      return;
+    }
+  }
+  const oldPage = ui.tab,
+    before = progressSnapshot(game),
+    oldRealm = game.life.realm;
+  if (command === "tab" || command === "guide-go" || command === "guide-replay")
+    remember();
+  const result = dispatch(game, ui, command, arg);
+  if (result.ok && MUTATING_COMMANDS.has(command)) persistGame();
+  if (command === "tab" && result.ok) {
+    ui.detailsOpen =
+      preferences.rememberPage && ui.tab === "修行" ? memory.details : false;
+    historyPage();
+  } else if (oldPage !== ui.tab) historyPage();
+  paint({ focusDialog: command === "guide-open" });
+  scrollToResult(result, oldPage, command);
+  if (result.ok) {
+    sound(
+      game.pending
+        ? "event"
+        : oldRealm !== game.life.realm
+          ? "breakthrough"
+          : game.worldYear !== before.year ||
+              ["buy", "equip", "perk"].includes(command)
+            ? "success"
+            : "tap",
+    );
+    if (preferences.haptics && navigator.vibrate) navigator.vibrate(12);
+    if (MUTATING_COMMANDS.has(command))
+      toast(commandFeedback(before, game, command, arg));
+  } else {
+    sound("error");
+    toast(ui.flash || "当前条件不足。", true);
+  }
+}
+root.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-cmd]");
+  if (button && !button.disabled)
+    execute(button.dataset.cmd, button.dataset.arg || "");
+});
+root.addEventListener(
+  "toggle",
+  (event) => {
+    if (
+      !event.target.matches?.(".management") ||
+      event.target.open === ui.detailsOpen
+    )
+      return;
+    ui.detailsOpen = event.target.open;
+    remember();
+    paint();
+  },
+  true,
+);
+root.addEventListener("input", (event) => {
+  const field = event.target.dataset.volume;
+  if (!["musicVolume", "sfxVolume"].includes(field)) return;
+  preferences[field] = Math.max(0, Math.min(100, Number(event.target.value)));
+  preferenceDirty = true;
+  audio.update(preferences);
+  const output = root.querySelector(`[data-volume-label="${field}"]`);
+  if (output) output.textContent = `${preferences[field]}%`;
+  updateAudioStatus();
+});
+root.addEventListener("change", async (event) => {
+  if (event.target.dataset.volume) {
+    persistPreferences();
+    if (preferenceWarning) toast(preferenceWarning, true);
+    return;
+  }
+  if (event.target.id !== "save-import") return;
+  const file = event.target.files?.[0];
+  event.target.value = "";
+  if (!file) return;
+  if (file.size > MAX_IMPORT_BYTES) {
+    toast("请选择不超过1MB的JSON存档。", true);
+    return;
+  }
+  try {
+    const result = inspectImport(await file.text());
+    if (result.error) toast(result.error, true);
+    else previewReplacement(result.game, `导入：${file.name}`);
+  } catch {
+    toast("文件读取失败，当前进度没有改变。", true);
+  }
+});
+document.addEventListener("keydown", (event) => {
+  const dialog = root.querySelector('[role="dialog"]');
+  if (dialog) {
+    if (event.key === "Escape" && !game.pending) {
+      if (ui.confirm) execute("confirm-cancel");
+      else if (ui.handbook) execute("guide-close");
+      event.preventDefault();
+      return;
+    }
+    trapDialogKey(event, dialog);
+    return;
+  }
+  if (
+    !preferences.keyboardShortcuts ||
+    event.repeat ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.altKey ||
+    event.target.matches('input,textarea,select,[contenteditable="true"]')
+  )
+    return;
+  const pages = Object.keys(PAGE_HASH),
+    index = Number(event.key) - 1;
+  if (index >= 0 && index < 5 && allowedPage(game, pages[index])) {
+    execute("tab", pages[index]);
+    event.preventDefault();
+  } else if (event.key.toLowerCase() === "n" && ui.tab !== "设置") {
+    execute("advance", "1");
+    event.preventDefault();
+  } else if (event.key.toLowerCase() === "m") {
+    execute("preference", "music");
+    event.preventDefault();
+  }
+});
+window.addEventListener(
+  "scroll",
+  () => {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(remember, 180);
+  },
+  { passive: true },
+);
+window.addEventListener("popstate", () => {
+  const page = pageFromHash(location.hash) || "修行";
+  if (!allowedPage(game, page)) return;
+  remember();
+  ui.tab = page;
+  ui.detailsOpen =
+    preferences.rememberPage && page === "修行" ? memory.details : false;
+  ui.handbook = null;
+  ui.confirm = null;
+  paint();
+  window.scrollTo({
+    top: preferences.rememberPage ? memory.position(page) : 0,
+  });
+});
+window.addEventListener("storage", (event) => {
+  if (event.key === key && event.newValue && event.newValue !== persist(game)) {
+    writeProtected = true;
+    ui.externalChanged = true;
+    paint();
+    toast("另一窗口更新了存档，请刷新后继续。", true);
+  }
+});
+window.addEventListener("pagehide", () => {
+  remember();
+  if (preferenceDirty) persistPreferences();
+});
+persistGame();
+historyPage(true);
+paint({ focusDialog: true });
+if (preferences.rememberPage && !game.pending)
+  requestAnimationFrame(() =>
+    window.scrollTo({ top: memory.position(ui.tab), behavior: "instant" }),
+  );

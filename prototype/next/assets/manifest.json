@@ -1,6 +1,6 @@
 {
-  "version": "1.4",
-  "theme": "墨青金环",
+  "version": "1.6",
+  "theme": "墨青留白",
   "purpose": "Game UI art, images are independent of text and controls",
   "provenance": "Original image generation within this conversation, optimized to WebP for web delivery",
   "assets": [
@@ -75,6 +75,30 @@
       ],
       "alpha": false,
       "checksum": "db4998e910c8a7a1e60e0f57d1cb45dc6a56adc3d80a9b2c1b30d174d6d8788c"
+    },
+    {
+      "path": "backgrounds/quiet-mountains.webp",
+      "name": "留白远山",
+      "type": "background",
+      "bytes": 32094,
+      "size": [
+        1200,
+        800
+      ],
+      "alpha": false,
+      "checksum": "d2d398f3ec78fe28498b10e6cb82c3e857da8a1abacca5be03fd193d24d1917f"
+    },
+    {
+      "path": "characters/quiet-meditation.webp",
+      "name": "素衣静修",
+      "type": "character",
+      "bytes": 48364,
+      "size": [
+        474,
+        480
+      ],
+      "alpha": true,
+      "checksum": "e7b363b1e1b46b9de25467ff343c1eda672568d0d60bef5500c825917853e5b2"
     }
   ]
 }

@@ -1,0 +1,431 @@
+/* 阅读顺序、常用操作、双栏与设备原生控件。 */
+html {
+  scroll-padding-bottom: 160px;
+}
+.modal-open {
+  overflow: hidden;
+}
+.modal {
+  overscroll-behavior: contain;
+}
+.confirm-message {
+  white-space: pre-line;
+}
+.music-shortcut {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: none;
+  color: #9ab4a9;
+}
+.music-shortcut[aria-pressed="true"] {
+  color: #f0d39b;
+  background: #325044;
+}
+.music-shortcut .ico {
+  width: 20px;
+  height: 20px;
+}
+.masthead-compact {
+  padding-top: 10px;
+}
+.masthead-compact .identity .eyebrow,
+.masthead-compact .identity-realm {
+  display: none;
+}
+.masthead-compact .life-strip {
+  margin: 6px 0;
+}
+.masthead-compact .resources {
+  padding: 8px 0;
+}
+.masthead-compact .res > b {
+  font-size: 18px;
+}
+.masthead-compact .res small {
+  display: none;
+}
+.masthead-settings .life-strip,
+.masthead-settings .resources {
+  display: none;
+}
+.masthead-settings {
+  padding-bottom: 8px;
+}
+.page-banner {
+  padding: 14px 16px;
+  background: #10272c;
+}
+.page-banner h2 {
+  font-size: 28px;
+}
+.page-banner > span {
+  color: #a5bbaf;
+}
+.page-content,
+.home-primary,
+.home-secondary {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+.home-layout {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.quick-plan-options {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.quick-plan-options button {
+  padding: 10px 2px;
+  min-width: 0;
+  border: 1px solid #547669;
+  border-radius: 8px;
+  background: #122b30;
+  font-size: 15px;
+}
+.quick-plan-options button.selected {
+  color: #f7e1b3;
+  border-color: #c9ae74;
+  background: #395141;
+}
+.quick-plans p {
+  font-size: 13px;
+  color: #c0d1c4;
+  line-height: 1.7;
+  margin-top: 12px;
+}
+.quick-plans small,
+.opportunities > small {
+  display: block;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #a9c0b3;
+  margin-top: 10px;
+}
+.opportunities > p {
+  color: #b7cabe;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.opportunity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.opportunity-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  gap: 8px;
+  background: #224139;
+  border: 1px solid #63817188;
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 8px;
+}
+.opportunity-link .ico {
+  width: 16px;
+}
+.research-reminder {
+  font-size: 12px !important;
+  padding: 12px 0 0;
+  border-top: 1px solid #799f872b;
+  margin-top: 12px;
+}
+.setting-volume {
+  display: block;
+}
+.setting-volume > b {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.setting-volume output {
+  font-variant-numeric: tabular-nums;
+  color: #e8d8b7;
+}
+.setting-volume input {
+  display: block;
+  width: 100%;
+  height: 48px;
+  margin: 4px 0 0;
+  accent-color: #c9b47d;
+  cursor: pointer;
+}
+.setting-volume input:focus-visible {
+  outline: 2px solid #eed79c;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+.setting-switch,
+.mini-action {
+  flex-shrink: 0;
+}
+.toast {
+  position: fixed;
+  z-index: 60;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(150px + env(safe-area-inset-bottom, 0px));
+  width: max-content;
+  max-width: calc(100% - 32px);
+  color: #edf5e7;
+  background: #294c40fa;
+  border: 1px solid #98b79b;
+  border-radius: 12px;
+  box-shadow: 0 6px 24px #0005;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  pointer-events: none;
+}
+.toast[hidden] {
+  display: none;
+}
+.toast.is-error {
+  background: #5a3c2efa;
+  border-color: #c5a17b;
+}
+.shell:has(.settings-page) .toast {
+  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}
+.storage-warning {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.storage-warning button {
+  background: #183438;
+  padding: 10px 12px;
+  border: 1px solid #ab9d76;
+  border-radius: 8px;
+}
+.management-content {
+  padding: 0 12px 12px;
+}
+.feature-block .panel-head {
+  align-items: center;
+}
+.panel-meta {
+  line-height: 1.8;
+}
+.guide-next {
+  border: 0;
+}
+html[data-compact="true"] .world-scene {
+  height: 82px;
+}
+html[data-compact="true"] .sanctuary .guide-next,
+html[data-compact="true"] .masthead:not(.masthead-compact) .eyebrow,
+html[data-compact="true"] .goal-compact small {
+  display: none;
+}
+html[data-compact="true"] .masthead:not(.masthead-compact) .life-strip {
+  margin-top: 6px;
+  margin-bottom: 8px;
+}
+html[data-compact="true"] .world-caption {
+  display: none;
+}
+html[data-compact="true"] .place-marker {
+  bottom: 30px;
+}
+html[data-compact="true"] .cultivation-heading {
+  min-height: 66px;
+}
+html[data-compact="true"] .cultivation-heading .eyebrow {
+  display: none;
+}
+html[data-compact="true"] .cultivation-heading h2 {
+  font-size: 29px;
+}
+html[data-compact="true"] .meditating-art {
+  width: 86px;
+  height: 86px;
+  right: 14px;
+}
+html[data-compact="true"] .masthead:not(.masthead-compact) .resources {
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+.res > b,
+.cultivation-progress b,
+.progress-label,
+.compact-metrics b,
+.meter-head b {
+  font-variant-numeric: tabular-nums;
+}
+@media (min-width: 960px) {
+  .shell {
+    width: min(calc(100% - 48px), 1100px);
+    margin: 20px auto 0;
+    left: auto;
+    border-radius: 16px 16px 0 0;
+  }
+  .desktop-inscription {
+    display: none;
+  }
+  .bottom-fixed {
+    width: min(calc(100% - 48px), 1100px);
+    left: 50%;
+  }
+  .masthead {
+    padding: 16px 24px 0;
+  }
+  .masthead .identity h1 {
+    font-size: 27px;
+  }
+  .resources {
+    margin-left: -24px;
+    margin-right: -24px;
+  }
+  .screen {
+    padding: 0 24px 28px;
+    gap: 16px;
+  }
+  .home-layout {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 20px;
+  }
+  .inner-page .page-content {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 20px;
+  }
+  .inner-page .page-content > .settings-page {
+    grid-column: 1/-1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 20px;
+  }
+  .settings-page > .panel {
+    min-width: 0;
+  }
+  .next-buttons {
+    max-width: 600px;
+    margin: auto;
+  }
+  .bottom-fixed {
+    background: #132e32;
+  }
+  .bottom-tab {
+    min-height: 66px;
+    flex-direction: row;
+    gap: 10px;
+  }
+  .bottom-tab .notification-dot {
+    top: 14px;
+    right: calc(50% - 37px);
+  }
+  .cultivation-card {
+    padding: 22px;
+  }
+  .cultivation-heading {
+    min-height: 100px;
+  }
+  html[data-compact="true"] .cultivation-heading {
+    min-height: 96px;
+  }
+  html[data-compact="true"] .meditating-art {
+    width: 118px;
+    height: 118px;
+  }
+  .world-scene {
+    border-bottom: 1px solid #78927855;
+  }
+  html[data-compact="true"] .world-scene {
+    height: 115px;
+  }
+}
+@media (max-width: 355px) {
+  .brand-heading h1 {
+    font-size: 20px;
+  }
+  .identity .eyebrow {
+    letter-spacing: 0;
+  }
+  .brand-heading {
+    gap: 0;
+  }
+  .incarnation {
+    padding-left: 4px;
+  }
+  .masthead {
+    column-gap: 2px;
+  }
+  .incarnation strong {
+    font-size: 14px;
+  }
+  .incarnation strong b {
+    font-size: 23px;
+  }
+  .panel {
+    padding: 14px;
+  }
+  .quick-plan-options {
+    gap: 5px;
+  }
+  .quick-plan-options button {
+    font-size: 14px;
+  }
+  .setting-row {
+    gap: 10px;
+  }
+  .guide-next > span {
+    flex: 1;
+  }
+}
+
+.place-marker > .notification-dot {
+  display: block;
+}
+.investment > div:not(.available-action) {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.desktop-inscription {
+  display: none;
+}
+.shell {
+  left: auto;
+}
+.bottom-fixed {
+  left: 50%;
+}
+@media (min-width: 720px) and (max-width: 959px) {
+  .shell {
+    width: calc(100% - 32px);
+    max-width: 840px;
+    margin: 16px auto 0;
+  }
+  .bottom-fixed {
+    width: calc(100% - 32px);
+    max-width: 840px;
+  }
+  .home-layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .inner-page .page-content {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .inner-page .page-content > .settings-page {
+    grid-column: 1/-1;
+  }
+}
